@@ -2,7 +2,6 @@
 title: Hello world!
 layout: post
 tags:
-  - boring
   - zero
 ---
 
