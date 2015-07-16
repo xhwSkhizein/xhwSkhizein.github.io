@@ -1,12 +1,11 @@
 markdown: rdiscount
 highlighter: pygments
 permalink: /:year/:month/:day/:title.html
-name: "rusty shutter"
+name: "Skhizein'x"
 markdown: rdiscount
 
 author: "skhizein"
 atom-baseurl: "http://usopp.info"
-disqus: ""
 
 navigations:
   - title: Archive
@@ -24,4 +23,3 @@ navigations:
   - title: Subscribe
     class: fa fa-rss
     href: /atom.xml
-

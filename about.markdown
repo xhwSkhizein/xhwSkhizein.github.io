@@ -5,7 +5,7 @@ layout: page
 
 a
 
-> Minimalist | Appleist | Unixer | Coder
+> Dreamer | half Coder | fool
 
 who involved in 
 
@@ -13,10 +13,5 @@ who involved in
 
 mail 
 
-> echo srvpqxfbyqfvpdtkbjwt | tr yxwvtsrqpkjfdb zuonmlihgeca@.
+> skhizein0706@gmail.com
 
-or follow 
-
-> [@o_lll](https://twitter.com/#)
-
-to reach me
