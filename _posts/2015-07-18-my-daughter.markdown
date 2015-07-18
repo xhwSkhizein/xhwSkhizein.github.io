@@ -6,5 +6,5 @@ tags:
 ---
 
 This is my daughter, she's name is Oven.
-![Oven](https://farm1.staticflickr.com/256/19755696211_b633226a98_c.jpg)
+![Oven](http://7u2nrz.com1.z0.glb.clouddn.com/@/blog/article/oven_1.jpg)
 
