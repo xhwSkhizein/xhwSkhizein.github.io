@@ -1,0 +1,149 @@
+---
+title: Mysql数据库备份
+layout: post
+guid: urn:uuid:27e5606b-9256-4c3c-b19f-bc468764aa2d
+tags:
+  - worknote
+---
+
+
+1. 首先在主库上执行备份，产生一份快照保存到BACKUP-DIR
+> ```innobackupex --user=DBUSER --password=DBUSERPASS /path/to/BACKUP-DIR/```
+> ```innobackupex --apply-log /path/to/BACKUP-DIR```
+> ```可以将BACKUP-DIR目录打包存储到本地，以防万一啊```
+
+2. 先关闭mysql,再删除/data/mysql下的所有文件，在从库上执行同步还原，更改mysql目录的权限
+ ```service mysql stop```
+ ```innobackupex --copy-back /path/to/BACKUP-DIR```
+ ```chown -R mysql:mysql /data/mysql```
+ ```service mysql start```
+
+* 如果主库挂了，binlog错位, 在从库上执行下面代码，矫正binlog
+ ```change master to master_host='192.168.1.x',```
+ ```master_user='master_User', master_password='910JQKA',```
+ ```master_log_file="binlog.000086", master_log_pos=542443943;```
+
+* 启动从库同步，
+```mysql> start slave；```
+* 查看从库状态:
+```
+mysql> show slave status \G;
+*************************** 1. row ***************************
+               Slave_IO_State: Waiting for master to send event
+                  Master_Host: 192.168.1.14
+                  Master_User: slaveuser
+                  Master_Port: 3306
+                Connect_Retry: 60
+              Master_Log_File: binlog.000566
+          Read_Master_Log_Pos: 498494811
+               Relay_Log_File: relay.000002
+                Relay_Log_Pos: 1586118
+        Relay_Master_Log_File: binlog.000566
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+              Replicate_Do_DB:
+          Replicate_Ignore_DB: mysql,test,information_schema
+           Replicate_Do_Table:
+       Replicate_Ignore_Table:
+      Replicate_Wild_Do_Table:
+  Replicate_Wild_Ignore_Table:
+                   Last_Errno: 0
+                   Last_Error:
+                 Skip_Counter: 0
+          Exec_Master_Log_Pos: 475672316
+              Relay_Log_Space: 24408776
+              Until_Condition: None
+               Until_Log_File:
+                Until_Log_Pos: 0
+           Master_SSL_Allowed: No
+           Master_SSL_CA_File:
+           Master_SSL_CA_Path:
+              Master_SSL_Cert:
+            Master_SSL_Cipher:
+               Master_SSL_Key:
+        Seconds_Behind_Master: 2706
+Master_SSL_Verify_Server_Cert: No
+                Last_IO_Errno: 0
+                Last_IO_Error:
+               Last_SQL_Errno: 0
+               Last_SQL_Error:
+  Replicate_Ignore_Server_Ids:
+             Master_Server_Id: 14
+                  Master_UUID: dda9abcc-613b-11e4-823d-5254ef32ab9c
+             Master_Info_File: /data/mysql/master.info
+                    SQL_Delay: 0
+          SQL_Remaining_Delay: NULL
+      Slave_SQL_Running_State: Reading event from the relay log
+           Master_Retry_Count: 86400
+                  Master_Bind:
+      Last_IO_Error_Timestamp:
+     Last_SQL_Error_Timestamp:
+               Master_SSL_Crl:
+           Master_SSL_Crlpath:
+           Retrieved_Gtid_Set:
+            Executed_Gtid_Set:
+                Auto_Position: 0
+1 row in set (0.00 sec)
+```
+主要看同步是否启动成功，是否有错误，等等**Seconds_Behind_Master**不为0的话说明从库还落后，否则就是开始正常同步了：
+```mysql
+mysql> show slave status \G
+*************************** 1. row ***************************
+               Slave_IO_State: Waiting for master to send event
+                  Master_Host: 192.168.1.14
+                  Master_User: slaveuser
+                  Master_Port: 3306
+                Connect_Retry: 60
+              Master_Log_File: binlog.000566
+          Read_Master_Log_Pos: 500317606
+               Relay_Log_File: relay.000002
+                Relay_Log_Pos: 26231408
+        Relay_Master_Log_File: binlog.000566
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+              Replicate_Do_DB:
+          Replicate_Ignore_DB: mysql,test,information_schema
+           Replicate_Do_Table:
+       Replicate_Ignore_Table:
+      Replicate_Wild_Do_Table:
+  Replicate_Wild_Ignore_Table:
+                   Last_Errno: 0
+                   Last_Error:
+                 Skip_Counter: 0
+          Exec_Master_Log_Pos: 500317606
+              Relay_Log_Space: 26231571
+              Until_Condition: None
+               Until_Log_File:
+                Until_Log_Pos: 0
+           Master_SSL_Allowed: No
+           Master_SSL_CA_File:
+           Master_SSL_CA_Path:
+              Master_SSL_Cert:
+            Master_SSL_Cipher:
+               Master_SSL_Key:
+        Seconds_Behind_Master: 0
+Master_SSL_Verify_Server_Cert: No
+                Last_IO_Errno: 0
+                Last_IO_Error:
+               Last_SQL_Errno: 0
+               Last_SQL_Error:
+  Replicate_Ignore_Server_Ids:
+             Master_Server_Id: 14
+                  Master_UUID: dda9abcc-613b-11e4-823d-5254ef32ab9c
+             Master_Info_File: /data/mysql/master.info
+                    SQL_Delay: 0
+          SQL_Remaining_Delay: NULL
+      Slave_SQL_Running_State: Slave has read all relay log; waiting for the slave I/O thread to update it
+           Master_Retry_Count: 86400
+                  Master_Bind:
+      Last_IO_Error_Timestamp:
+     Last_SQL_Error_Timestamp:
+               Master_SSL_Crl:
+           Master_SSL_Crlpath:
+           Retrieved_Gtid_Set:
+            Executed_Gtid_Set:
+                Auto_Position: 0
+1 row in set (0.00 sec)
+```
+
+收
