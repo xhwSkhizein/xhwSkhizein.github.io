@@ -7,26 +7,26 @@ tags:
 ---
 
 
-1. 首先在主库上执行备份，产生一份快照保存到BACKUP-DIR
+### 1. 首先在主库上执行备份，产生一份快照保存到BACKUP-DIR
 > ```innobackupex --user=DBUSER --password=DBUSERPASS /path/to/BACKUP-DIR/```
 > ```innobackupex --apply-log /path/to/BACKUP-DIR```
 > ```可以将BACKUP-DIR目录打包存储到本地，以防万一啊```
 
-2. 先关闭mysql,再删除/data/mysql下的所有文件，在从库上执行同步还原，更改mysql目录的权限
+### 2. 先关闭mysql,再删除/data/mysql下的所有文件，在从库上执行同步还原，更改mysql目录的权限
  ```service mysql stop```
  ```innobackupex --copy-back /path/to/BACKUP-DIR```
  ```chown -R mysql:mysql /data/mysql```
  ```service mysql start```
 
-* 如果主库挂了，binlog错位, 在从库上执行下面代码，矫正binlog
+#### 如果主库挂了，binlog错位, 在从库上执行下面代码，矫正binlog
  ```change master to master_host='192.168.1.x',```
  ```master_user='master_User', master_password='910JQKA',```
  ```master_log_file="binlog.000086", master_log_pos=542443943;```
 
-* 启动从库同步，
+#### 启动从库同步，
 ```mysql> start slave；```
-* 查看从库状态:
-```
+#### 查看从库状态:
+<pre>
 mysql> show slave status \G;
 *************************** 1. row ***************************
                Slave_IO_State: Waiting for master to send event
@@ -84,9 +84,10 @@ Master_SSL_Verify_Server_Cert: No
             Executed_Gtid_Set:
                 Auto_Position: 0
 1 row in set (0.00 sec)
-```
+</pre>
 主要看同步是否启动成功，是否有错误，等等**Seconds_Behind_Master**不为0的话说明从库还落后，否则就是开始正常同步了：
-```mysql
+
+<pre><code>
 mysql> show slave status \G
 *************************** 1. row ***************************
                Slave_IO_State: Waiting for master to send event
@@ -144,6 +145,7 @@ Master_SSL_Verify_Server_Cert: No
             Executed_Gtid_Set:
                 Auto_Position: 0
 1 row in set (0.00 sec)
-```
+</code>
+</pre>
 
 收

@@ -2,7 +2,7 @@ markdown: rdiscount
 highlighter: pygments
 permalink: /:year/:month/:day/:title.html
 name: "Skhizein'X"
-markdown: rdiscount
+markdown: kramdown
 
 author: "skhizein"
 atom-baseurl: "http://usopp.info"
