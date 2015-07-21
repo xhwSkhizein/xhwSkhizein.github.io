@@ -18,14 +18,14 @@ tags:
  ```chown -R mysql:mysql /data/mysql```
  ```service mysql start```
 
-#### 如果主库挂了，binlog错位, 在从库上执行下面代码，矫正binlog
+#### *如果主库挂了，binlog错位, 在从库上执行下面代码，矫正binlog
  ```change master to master_host='192.168.1.x',```
  ```master_user='master_User', master_password='910JQKA',```
  ```master_log_file="binlog.000086", master_log_pos=542443943;```
 
-#### 启动从库同步，
+#### *启动从库同步，
 ```mysql> start slave；```
-#### 查看从库状态:
+#### *查看从库状态:
 <pre>
 mysql> show slave status \G;
 *************************** 1. row ***************************
@@ -86,8 +86,7 @@ Master_SSL_Verify_Server_Cert: No
 1 row in set (0.00 sec)
 </pre>
 主要看同步是否启动成功，是否有错误，等等**Seconds_Behind_Master**不为0的话说明从库还落后，否则就是开始正常同步了：
-
-<pre><code>
+<pre>
 mysql> show slave status \G
 *************************** 1. row ***************************
                Slave_IO_State: Waiting for master to send event
@@ -145,7 +144,6 @@ Master_SSL_Verify_Server_Cert: No
             Executed_Gtid_Set:
                 Auto_Position: 0
 1 row in set (0.00 sec)
-</code>
 </pre>
 
 收
