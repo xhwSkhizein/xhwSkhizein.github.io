@@ -1,0 +1,16 @@
+---
+title: 终端为啥没颜色
+layout: post
+guid: urn:uuid:cdf86cba-fb3f-40f0-b224-667c20c5c0b7
+tags:
+  - linux
+---
+> Terminal 下不同类型的文件显示不同的颜色
+Terminal 默认的 shell 是 bash (提示符是 $)
+在 ~ 先建立一个文件  ~/.bash_profile 
+加入下面的两行：
+```export CLICOLOR=1```
+```export LSCOLORS=gxfxaxdxcxegedabagacad```
+
+存盘， 退出Terminal, 重起Terminal.
+
