@@ -1,0 +1,12 @@
+---
+title: brew
+layout: post
+guid: urn:uuid:143086d3-4977-47bb-b2ef-2160658ad5d1
+tags:
+  - tools
+---
+
+brew 
+====
+[homebrew](http://brew.sh) ,很好用！😄
+
