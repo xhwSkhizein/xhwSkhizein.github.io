@@ -1,0 +1,10 @@
+---
+title: CAS
+layout: post
+guid: urn:uuid:52aff0ad-b7cc-4335-a388-5ac8af53d35e
+tags:
+  - 
+---
+
+> CAS - compare and swap.
+> 即每次更新前先检查预期值A, 只有符合预期, 才会进行更新.
