@@ -6,12 +6,13 @@ tags:
   - java
   - Design Patterns
 ---
-### 问题：
+### 问题:
     如何构建一个可以适应需求变化的model？
 
 > 问题描述：
   在实际生产环境中model是根据需求随时可变的，因此产生了一些可选属性，在构造具有可选属性的model时怎样构建才最合理呢？
 
+### 问题思路:
 	1) 假如有一个model，
     	public class User {
 			private final String name;
