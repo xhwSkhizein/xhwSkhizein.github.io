@@ -1,0 +1,37 @@
+---
+title: 我失败的双检锁单例
+layout: post
+guid: urn:uuid:3da7164c-e16f-44dd-950c-e4320279293d
+tags:
+  - worknote
+---
+
+写了一个失败的双检锁单例, 代码是下面这个样子的, 刚写完自信满满, 唉~
+		public T getInstanceBy(K key){
+			T instance = map.get(key);
+			if(instance == null){
+				synchronized(lock){
+					if(instance == null){
+							instance = createTObject();
+  					}
+				}
+			}
+			return instance;
+		}
+
+恩, 就是这个样子, 成功的没有实现单例,创建了一大堆栗子...糖炒栗子嘞~
+
+正确的姿势应该是这个样子滴! 😓eg:
+		public T getInstanceBy(K key){
+			T instance = map.get(key);
+			if(instance == null){   
+				synchronized(lock){   
+					instance = map.get(key);
+					if(instance == null){
+						instance = createTObject();
+					}
+				}
+			}
+			return instance;
+		}
+
