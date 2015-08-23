@@ -1,0 +1,32 @@
+---
+title: 一次探险
+layout: post
+guid: urn:uuid:4886b7e8-8264-4797-be05-4588d0f033cd
+tags:
+  - data structure
+---
+<br />
+
+<i>这是一次未知旅行的探险.®†¥ˆøπ“‘æ√µ≤≥÷ºª•¶§∞¢£™¡…</i>
+<br />
+<br />
+
+### 需求:
+
+> 按条件A,B,C,D,E(A>B>C>D>E)筛选用户, 要求得到满足A的前一百,满足AB的前一百,满足ABC的前一百等等, 其中任意集合的元素不能重复出现, 按ABCDE顺序筛选用户.
+
+<br />
+
+### 思路:
+
+> 构建一个PriorityQueueMap<Condition, PriorityQueue>, 队列要长度固定, 每次增加元素时优先级低的被淘汰者需要继续交给下一个Condition队列处理, 实现一个漏斗式的put过程,
+由于条件限制,我们需要将待竞争元素放到最底层然后逐级上升(若从最高级向下是1-N的,而从最低级向上是N-1).
+
+<br>
+
+### 过程:
+先贴上代码吧...[_click_me_to_see_code_](https://github.com/xhwSkhizein/atom/tree/master/src/main/java/im/atom/base/datastructure)
+
+> <h4>1.最大堆</h4>
+
+> <h4>2.put的漏斗逻辑</h4>

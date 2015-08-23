@@ -37,3 +37,5 @@ tags:
 			}
 			return instance;
 		}
+
+思维要严谨😱
