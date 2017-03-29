@@ -5,13 +5,12 @@ layout: page
 
 a
 
-> Dreamer | half Coder | fool
+> Dreamer | Coder | fool | Artists(^.^)
 
-who involved in 
+who involved in
 
 > [github](https://github.com/xhwSkhizein)
 
-mail 
+mail
 
 > skhizein0706@gmail.com
-
