@@ -21,14 +21,14 @@ layout: default
     </span>
     {% endif %}
     <!-- BEGIN this would not work on any other domain -->
-    <span
+    <!-- <span
       class           = 'like-wrapper'
       like-shortname  = '{{ site.disqus }}'
       like-identifier = '{{ post.guid }}'
       like-name       = '{{ post.title }}'
       like-link       = '{{ site.atom-baseurl }}{{ page.url }}'
       like-btn        = '&#xf087;'
-    ></span>
+    ></span> -->
     <script type="text/javascript">
       var l = document.createElement('script'); l.type = 'text/javascript'; l.async = true;
       l.src = 'http://www.like-btn.com/javascript/widget.js';
@@ -44,7 +44,7 @@ layout: default
   </ul>
   <div class="divider"></div>
   <ul class="listing main-listing">
-    <li class="listing-seperator">Happend earlier this year</i>
+    <li class="listing-seperator">Happend earlier this year...</i>
   {% capture year %}{{ site.time | date:"%Y"}}{% endcapture %}
   {% for post in site.posts offset:1 %}
     {% capture y %}{{ post.date | date:"%Y"}}{% endcapture %}
@@ -56,6 +56,4 @@ layout: default
       <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
     </li>
   {% endfor %}
-    <li class="listing-seperator"><a href="/archive.html">Long long ago</a></li>
-  </ul>
-</div>
+    <li class="listing-seperator"><a href="/archive.html">Long long ago</a></li></ul></div>
