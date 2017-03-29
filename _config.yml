@@ -5,7 +5,7 @@ name: "Skhizein'X"
 markdown: kramdown
 
 author: "skhizein"
-atom-baseurl: "http://usopp.info"
+atom-baseurl: ""
 
 navigations:
   - title: Archive
@@ -19,7 +19,7 @@ navigations:
     href: /about.html
   - title: Gallery
     class: fa fa-film
-    href: http://example.com
+    href: https://www.flickr.com/photos/134804491@N07/
   - title: Subscribe
     class: fa fa-rss
     href: /atom.xml
