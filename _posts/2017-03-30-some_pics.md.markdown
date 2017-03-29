@@ -1,0 +1,21 @@
+---
+title: some_pics.md
+layout: post
+guid: urn:uuid:aff3732f-7b47-4512-a1ec-6f25735910f8
+tags:
+  - life
+---
+
+![](http://7u2nrz.com1.z0.glb.clouddn.com/IMG_0204.JPG)
+
+![](http://7u2nrz.com1.z0.glb.clouddn.com/IMG_0212.JPG)
+
+![](http://7u2nrz.com1.z0.glb.clouddn.com/IMG_0227.JPG)
+
+![](http://7u2nrz.com1.z0.glb.clouddn.com/IMG_0231.JPG)
+
+![](http://7u2nrz.com1.z0.glb.clouddn.com/IMG_0236.JPG)
+
+![](http://7u2nrz.com1.z0.glb.clouddn.com/IMG_0237.JPG)
+
+![](http://7u2nrz.com1.z0.glb.clouddn.com/KwaP7tX%20-%20Imgur.jpg)
