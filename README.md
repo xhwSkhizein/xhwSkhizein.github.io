@@ -14,4 +14,5 @@
 * add like support
 * add analysis
 * complete theme style
-* support audio, video
+* more elegant way to support audio, video
+* support view big pic and focus
