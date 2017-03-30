@@ -6,6 +6,8 @@ tags:
   - life
 ---
 
+{% include audio.html %}
+
 ![](http://7u2nrz.com1.z0.glb.clouddn.com/IMG_0204.JPG)
 
 ![](http://7u2nrz.com1.z0.glb.clouddn.com/IMG_0212.JPG)
@@ -19,6 +21,3 @@ tags:
 ![](http://7u2nrz.com1.z0.glb.clouddn.com/IMG_0237.JPG)
 
 ![](http://7u2nrz.com1.z0.glb.clouddn.com/KwaP7tX%20-%20Imgur.jpg)
-
-
-{% include audio.html %}
