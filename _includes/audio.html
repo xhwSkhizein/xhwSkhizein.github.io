@@ -1,4 +1,31 @@
-<audio controls>
-	 <source src="http://7u2nrz.com1.z0.glb.clouddn.com/Ellie%20Goulding%20-%20How%20Long%20Will%20I%20Love%20You.mp3" type="audio/mpeg">
-	 Your browser does not support the audio tag.
-</audio>
+<div id="player">
+  <audio id="audio" src="http://7u2nrz.com1.z0.glb.clouddn.com/Ellie%20Goulding%20-%20How%20Long%20Will%20I%20Love%20You.mp3" type="audio/mpeg" controls loop></audio>
+  <div id="mask"></div>
+</div>
+
+
+<style type="text/css">
+#player {
+  position: relative;
+  width: 300px;
+  background: #fafafa;
+}
+
+#mask {
+  display: none;
+  background-color: #F3F5F6;
+  position: absolute;
+  width: 34px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: #fafafa;
+  z-index: 10
+}
+</style>
+<script type="text/javascript">
+	var match = navigator.userAgent.match(/Chrome\/(\d+)/);
+	if (match && parseInt(match[1]) >= 55) {
+  		document.getElementById('mask').style.display = 'block';
+	}
+</script>
