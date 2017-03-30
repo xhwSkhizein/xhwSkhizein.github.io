@@ -14,3 +14,4 @@
 * add like support
 * add analysis
 * complete theme style
+* support audio, video
