@@ -5,7 +5,7 @@ tags:
   - zero
 ---
 
-![Hello world](https://upload.wikimedia.org/wikipedia/commons/0/00/CNC_Hello_World.jpg)
+![Hello world](http://7u2nrz.com1.z0.glb.clouddn.com/hellowworld.png)
 
 > Everything begins here.
 
