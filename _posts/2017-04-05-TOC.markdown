@@ -1,0 +1,151 @@
+---
+title: TOC
+layout: post
+guid: urn:uuid:26cdd8b7-4ccc-4709-b6d4-ff61f97e1144
+tags:
+  - java multithread
+---
+
+
+### Java 基础
+
+- MultiThread
+- NIO
+- JVM
+- ClassLoader
+- Reflect
+- Collection
+- Function
+- IO
+- System
+- Framework(AOP, OSGI, ASM...)
+
+#### MultiThread
+
+1. 同步，并发，并行
+2. wait, notify, interruption, sleep, yield
+3. synchronized, Lock, ReentrantLock, ReadWriteLock
+4. Executor,Future,ThreadPool
+5. Multithread Collection
+6. volatile, Java Memory Model
+7. final field semantics
+8. MVCC
+
+* wait notify
+> * Notice that this provision necessitates the Java coding practice of using wait only within loops that terminate only when some logical condition that the thread is waiting for holds.
+	```Java
+	// The standard idiom for calling the wait method in Java
+	synchronized (sharedObject) {
+	    while (condition) {
+	    	sharedObject.wait();
+	        // (Releases lock, and reacquires on wakeup)
+	    }
+	    // do action based upon condition e.g. take or put into queue
+	}
+	```
+> 使用wait, notify实现生产者消费者逻辑的基本模式：
+>
+>  **Consumer** :
+  ```Java
+  	synchronized (sharedObject){
+		while(! workTodo){
+			sharedObject.wait();
+		}
+		// get next job in queue
+		workTodo = false;
+	}
+  ```
+> **Producer** :
+  ```Java
+    synchronized (sharedObject) {
+   		if(! workTodo){
+			// add job to queue
+			workTodo = true;
+		}
+		sharedObject.notifyAll();
+    }
+  ```
+ > [see code here](http://github.com/).
+
+* interrupt, sleep
+
+> **interrupt**, 每个线程都有一个boolean类型的中断状态，当中断线程时，这个线程的中断状态将设置为true。在Thread中包含了中断线程以及查询线程中断状态的方法，interrupt方法能中断目标线程，而isInterrupted能返回目标线程的中断状态，静态的interrupted方法将清除当前线程的中断状态，并返回他之前的值，interrupted是清除线程中断状态的唯一方法. 阻塞方法，例如Thread.sleep, Object.wait等都会检查线程何时中断，并且在发现中断时提前返回，他们在响应中断时执行的操作包括：清除中断状态，抛出InterruptedException，表示阻塞操作由于中断而提前结束。
+> 当线程在非阻塞状态下中断时，他的中断状态将被设置，然后根据将被取消的操作来检查中断状态以判断发生了中断，通过这样，中断操作将变得“有黏性”---即如果不处罚InterruptedException，那中断状态就会一直保持，直到明确清除中断状态。
+>
+> **调用interrupt并不意味着立即停止目标线程正在进行的工作，而只是传递了请求中断消息**，**通常，中断是实现取消的最合理方式**
+>
+> 中断的正确理解：
+> > 它并不会真正的中断一个正在运行的线程，而只是发出中断请求，然后由线程在下一个合适的时刻（这些时刻也被称为取消点）中断自己。有些方法例如wait、sleep和join，将严格执行这种请求，当他们收到中断请求或者在开始执行时发现某个已被设置好的中断状态时，将抛出一个异常，良好的设计方法可以完全忽略这种请求，只要他们能使用调用代码对中断请求进行某种处理
+>
+
+
+
+
+
+* MVCC (Multi version Concurrent Control)
+> Lock-free algorithms: The try/commit/(try again) pattern (CAS[compare and swap])
+>
+`对读的响应速度和并发性要求比较高的场景适合MVCC；而retry代价越大的场景越适合悲观锁机制`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+..

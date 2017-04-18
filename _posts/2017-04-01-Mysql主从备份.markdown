@@ -1,0 +1,7 @@
+---
+title: Mysql主从备份
+layout: post
+guid: urn:uuid:0443aa5b-2ef1-43d5-b675-cb851824c05a
+tags:
+  - Mysql
+---
