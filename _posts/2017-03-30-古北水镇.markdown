@@ -6,7 +6,6 @@ tags:
   - life
 ---
 
-{% include audio.html %}
 
 ![](http://7u2nrz.com1.z0.glb.clouddn.com/IMG_0204.JPG)
 
