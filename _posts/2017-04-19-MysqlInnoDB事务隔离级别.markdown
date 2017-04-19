@@ -10,7 +10,8 @@ tags:
 - [Wikipedia_Isolation](https://en.wikipedia.org/wiki/Isolation_(database_systems))
 - [Wikipedia_事务隔离](https://zh.wikipedia.org/wiki/%E4%BA%8B%E5%8B%99%E9%9A%94%E9%9B%A2)
 - [Wikipedia_2PL](https://en.wikipedia.org/wiki/Two-phase_locking) （两阶段锁2PL，两阶段提交2PC）
-
+- [Wikipedia_乐观并发控制](https://zh.wikipedia.org/wiki/%E4%B9%90%E8%A7%82%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6)
+- [Oracle® Database Concepts, chapter 13 Data Concurrency and Consistency, Preventable Phenomena and Transaction Isolation Levels](http://docs.oracle.com/cd/B12037_01/server.101/b10743/consist.htm#sthref1919)
 
 
 ##### 事务的定义：
