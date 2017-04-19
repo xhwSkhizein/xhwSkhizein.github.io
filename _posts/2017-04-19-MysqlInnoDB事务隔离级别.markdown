@@ -72,9 +72,10 @@ tags:
 
 
 
+##### MySQL InnoDB 存储引擎实现事务隔离级别介绍及分析
 
-
-
+> Mysql InnoDB 使用`MVCC`实现的事务隔离，默认是可重复读级别。
+> TODO
 
 
 
