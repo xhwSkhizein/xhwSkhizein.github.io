@@ -78,7 +78,7 @@ tags:
 > TODO
 
 
-
+[InnoDB-transaction-model](http://dev.cs.ovgu.de/db/mysql/InnoDB-transaction-model.html)
 
 
 

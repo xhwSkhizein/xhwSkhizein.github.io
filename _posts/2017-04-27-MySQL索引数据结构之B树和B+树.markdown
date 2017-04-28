@@ -1,0 +1,7 @@
+---
+title: MySQL索引数据结构之B树和B+树
+layout: post
+guid: urn:uuid:c74c29a5-3f70-44f7-95d5-a07cdca8abba
+tags:
+  - MySQL 数据结构 B-tree
+---

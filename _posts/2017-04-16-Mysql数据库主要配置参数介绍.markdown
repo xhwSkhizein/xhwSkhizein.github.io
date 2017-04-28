@@ -12,8 +12,23 @@ tags:
 > InnoDB Buffer Pool就是InnoDB用来缓存他的数据和索引的内存缓冲区，由innodb_buffer_pool_size设置其大小。
 > 理论上innodb_buffer_pool_size设置的越大，访问数据需要的磁盘I/O就越少。常见的做法是让这个值大于热点数据，
 > 这样可以获得比较好的性能，如果不清楚环境的数据量和访问模式，建议将其设置为机器物理内存大小的70%～80%
+> [参考官方文档](https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_buffer_pool_size)
+> [How MySQL use memory](https://dev.mysql.com/doc/refman/5.7/en/memory-use.html)
 
 2. `innodb_log_file_size`
-> 日志组里每个日志文件的大小。在32位计算机上日志文件的合并必须小于4G，默认大小是5M，在生产环境下这个值太小了。 官方推荐是从1MB到1/N的缓冲池大小，其中N是日志组里日志文件数目（由innodb_log_files_in_group变量来确定，一般默认值为2）。值越大，在缓冲池中需要检查点刷新的行为就越少，因此也越节约磁盘I/O，但更大的日志文件也意味着在崩溃时恢复得更慢。建议将日志文件的大小设置为256MB或者更大，这样可以满足一般情况下的需要。
+> 日志组里每个日志文件的大小。在32位计算机上日志文件的合并必须小于4G，默认大小是5M，在生产环境下这个值太小了。 官方推荐是从1MB到1/N的缓冲池大小，其中N是日志组里日志文件数目（由`innodb_log_files_in_group`变量来确定，一般默认值为2）。值越大，在缓冲池中需要检查点刷新的行为就越少，因此也越节约磁盘I/O，但更大的日志文件也意味着在崩溃时恢复得更慢。建议将日志文件的大小设置为256MB或者更大，这样可以满足一般情况下的需要。
+>
+> [参见官方文档](https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_log_file_size)
+> [Optimizing InnoDB Disk I/O](https://dev.mysql.com/doc/refman/5.7/en/optimizing-innodb-diskio.html)
 
-3.
+3. `innodb_flush_log_at_trx_commit`
+> 当每个事务被提交时，Innodb日志缓冲区内容(the contents of the InnoDB log buffer)被写道文件中后会不会刷到磁盘上产生IO操作。
+> 默认值为1，表示每次事务提交都会将Innodb日志缓冲区内容刷到磁盘，当出现异常，不会丢失数据，但因为每次都会产生磁盘IO所以性能并不高；
+> 如果设置为0，表示每隔一秒Innodb日志缓冲区内容会被写道文件并刷到磁盘上，但是由于操作系统进程调度问题，并不能保证每秒都能执行，因为几乎每秒都会写数据到磁盘，所以如果mysqld崩溃，相当于会丢失1秒钟的数据；
+> 如果设置为2（建议值），表示每次事务提交都会将Innodb日志缓冲区内容写到文件中，但是不刷新磁盘，而是每隔1秒钟刷一次磁盘。所以理论上，操作系统崩溃或者停电只会丢失一秒钟的事务数据。
+> Many operating systems and some disk hardware fool the flush-to-disk operation. They may tell mysqld that the flush has taken place, even though it has not. In this case, the durability of transactions is not guaranteed even with the setting 1, and in the worst case, a power outage can corrupt InnoDB data. Using a battery-backed disk cache in the SCSI disk controller or in the disk itself speeds up file flushes, and makes the operation safer. You can also try to disable the caching of disk writes in hardware caches.
+> [参见官方文档](https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit)
+
+4. `sync_binlog`
+> 如果`sync_binlog`设置的值大于0，表示Mysql会同步二进制日志文件(binary log)到磁盘(使用`fdatasync()`)，如果设置了`autocommit`模式，则每个SQL语句都会同步到磁盘，如果没设置`autocommit`，则每次事务提交都会同步二进制日志文件到磁盘。`sync_binlog`的默认值是0，表示不同步到磁盘，Mysql服务器依赖操作系统的磁盘同步机制。
+> [参见官方文档](https://dev.mysql.com/doc/refman/5.7/en/replication-options-binary-log.html#sysvar_sync_binlog)
