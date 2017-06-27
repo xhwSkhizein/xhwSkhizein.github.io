@@ -32,6 +32,7 @@ tags:
 8. MVCC
 
 * wait notify
+> * wait和notify必须在同步块或同步方法中执行，否则会抛出异常（`java.lang.IllegalMonitorStateException`）
 > * Notice that this provision necessitates the Java coding practice of using wait only within loops that terminate only when some logical condition that the thread is waiting for holds.
 	```Java
 	// The standard idiom for calling the wait method in Java
