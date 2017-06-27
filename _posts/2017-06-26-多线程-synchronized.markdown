@@ -74,7 +74,7 @@ b. Synchronized总共有三种用法：
 >
 >>  b. 如果线程已经占有该monitor，只是重新进入，则进入monitor的进入数加1。
 >
->>	c. 如果其他线程已经占用了monitor，则该线程进入阻塞状态，直到monitor的进入数为0，再重新尝试获取monitor的所有权。
+>>  c. 如果其他线程已经占用了monitor，则该线程进入阻塞状态，直到monitor的进入数为0，再重新尝试获取monitor的所有权。
 
 2. `monitorexit`
 > 执行monitorexit的线程必须是objectref所对应的monitor的所有者。
@@ -125,12 +125,13 @@ b. Synchronized总共有三种用法：
 
 > 如果对象是数组类型，则虚拟机用3个Word（字宽）存储对象头，如果对象是非数组类型，则用2字宽存储对象头。在32位虚拟机中，一字宽等于四字节，即32bit。
 
-
   |长度|内容|说明|
   |-----|-----|-----|
   |32/64bit|Mark Word|存储对象的hashCode或锁信息等。|
   |32/64bit|Class Metadata Address|存储到对象类型数据的指针|
   |32/64bit|Array length|数组的长度（如果当前对象是数组）|
+
+> 对象头信息
 
   <table style="width: 800px;" border="1" cellspacing="0" cellpadding="0">
   <tbody>

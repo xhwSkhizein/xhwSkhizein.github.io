@@ -120,6 +120,17 @@ ul.listing {
         content: "⭠ ";
         color: #ccc; }
 
+p::before {
+  content: "\00a0\00a0\00a0\00a0 "; }
+
+table {
+  border: solid #000 !important;
+  border-width: 1px 0 0 1px !important; }
+
+th, td {
+  border: solid #000 !important;
+  border-width: 0 1px 1px 0 !important; }
+
 article {
   margin: 2em 0; }
   article p {
