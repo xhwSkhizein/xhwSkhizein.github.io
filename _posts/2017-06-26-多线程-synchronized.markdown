@@ -6,16 +6,22 @@ tags:
   -
 ---
 a. Synchronized的作用主要有三个：
+
 （1）确保线程互斥的访问同步代码
+
 （2）保证共享变量的修改能够及时可见
+
 （3）有效解决重排序问题。
 
 b. Synchronized总共有三种用法：
+
 （1）修饰普通方法
+
 （2）修饰静态方法
+
 （3）修饰代码块
 
---
+---
 
 ```java
     public class SynchronizedDemo {
@@ -61,22 +67,26 @@ b. Synchronized总共有三种用法：
 	          17    20    17   any
 	}
 ```
+
 1. `monitorenter`
 > 每个对象有一个监视器锁（monitor）。当monitor被占用时就会处于锁定状态，线程执行`monitorenter`指令时尝试获取monitor的所有权，过程如下：
 	* 如果monitor的进入数为0，则该线程进入monitor，然后将进入数设置为1，该线程即为monitor的所有者。
 	* 如果线程已经占有该monitor，只是重新进入，则进入monitor的进入数加1.Â
 	* 如果其他线程已经占用了monitor，则该线程进入阻塞状态，直到monitor的进入数为0，再重新尝试获取monitor的所有权。
+
 2. `monitorexit`
 > 执行monitorexit的线程必须是objectref所对应的monitor的所有者。
 指令执行时，monitor的进入数减1，如果减1后进入数为0，那线程退出monitor，不再是这个monitor的所有者。其他被这个monitor阻塞的线程可以尝试去获取这个 monitor 的所有权。
 
-> wait/notify等方法也依赖于monitor对象，这就是为什么只有在同步的块或者方法中才能调用wait/notify等方法，否则会抛出java.lang.IllegalMonitorStateException的异常的原因。
+>> wait/notify等方法也依赖于monitor对象，这就是为什么只有在同步的块或者方法中才能调用wait/notify等方法，否则会抛出java.lang.IllegalMonitorStateException的异常的原因。
 
 
 对同步方法进行反编译，方法的同步并没有通过指令`monitorenter`和`monitorexit`来完成（理论上其实也可以通过这两条指令来实现），不过相对于普通方法，其常量池中多了ACC_SYNCHRONIZED标示符。JVM就是根据该标示符来实现方法的同步的：当方法调用时，调用指令将会检查方法的 ACC_SYNCHRONIZED 访问标志是否被设置，如果设置了，执行线程将先获取monitor，获取成功之后才能执行方法体，方法执行完后再释放monitor。在方法执行期间，其他任何线程都无法再获得同一个monitor对象。 其实本质上没有区别，只是方法的同步是一种隐式的方式来实现，无需通过字节码来完成。
 
 
 > Synchronized是通过对象内部的一个叫做监视器锁（monitor）来实现的。但是监视器锁本质又是依赖于底层的操作系统的Mutex Lock来实现的。而操作系统实现线程之间的切换这就需要从用户态转换到核心态，这个成本非常高，状态之间的转换需要相对比较长的时间，这就是为什么Synchronized效率低的原因。因此，这种依赖于操作系统Mutex Lock所实现的锁我们称之为“重量级锁”。JDK中对Synchronized做的种种优化，其核心都是为了减少这种重量级锁的使用。JDK1.6以后，为了减少获得锁和释放锁所带来的性能消耗，提高性能，引入了“轻量级锁”和“偏向锁”。
+
+-----
 
 #### 线程状态及状态转换
 > 当多个线程同时请求某个对象监视器时，对象监视器会设置几种状态用来区分请求的线程：
