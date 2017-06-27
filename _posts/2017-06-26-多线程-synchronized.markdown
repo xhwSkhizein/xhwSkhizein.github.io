@@ -70,9 +70,11 @@ b. Synchronized总共有三种用法：
 
 1. `monitorenter`
 > 每个对象有一个监视器锁（monitor）。当monitor被占用时就会处于锁定状态，线程执行`monitorenter`指令时尝试获取monitor的所有权，过程如下：
-	* 如果monitor的进入数为0，则该线程进入monitor，然后将进入数设置为1，该线程即为monitor的所有者。
-	* 如果线程已经占有该monitor，只是重新进入，则进入monitor的进入数加1.Â
-	* 如果其他线程已经占用了monitor，则该线程进入阻塞状态，直到monitor的进入数为0，再重新尝试获取monitor的所有权。
+>>  a. 如果monitor的进入数为0，则该线程进入monitor，然后将进入数设置为1，该线程即为monitor的所有者。
+>
+>>  b. 如果线程已经占有该monitor，只是重新进入，则进入monitor的进入数加1。
+>
+>>	c. 如果其他线程已经占用了monitor，则该线程进入阻塞状态，直到monitor的进入数为0，再重新尝试获取monitor的所有权。
 
 2. `monitorexit`
 > 执行monitorexit的线程必须是objectref所对应的monitor的所有者。
@@ -90,13 +92,19 @@ b. Synchronized总共有三种用法：
 
 #### 线程状态及状态转换
 > 当多个线程同时请求某个对象监视器时，对象监视器会设置几种状态用来区分请求的线程：
-* Contention List：所有请求锁的线程将被首先放置到该竞争队列, ContentionList并不是一个真正的Queue，而只是一个虚拟队列，原因在于ContentionList是由Node及其next指针逻辑构成，并不存在一个Queue的数据结构。ContentionList是一个后进先出（LIFO）的队列，每次新加入Node时都会在队头进行，通过CAS改变第一个节点的的指针为新增节点，同时设置新增节点的next指向后续节点，而取得操作则发生在队尾。显然，该结构其实是个Lock-Free的队列。
+* Contention List：
+>> 所有请求锁的线程将被首先放置到该竞争队列, ContentionList并不是一个真正的Queue，而只是一个虚拟队列，原因在于ContentionList是由Node及其next指针逻辑构成，并不存在一个Queue的数据结构。ContentionList是一个后进先出（LIFO）的队列，每次新加入Node时都会在队头进行，通过CAS改变第一个节点的的指针为新增节点，同时设置新增节点的next指向后续节点，而取得操作则发生在队尾。显然，该结构其实是个Lock-Free的队列。
 因为只有Owner线程才能从队尾取元素，也即线程出列操作无争用，当然也就避免了CAS的ABA问题。
-* Entry List：Contention List中那些有资格成为候选人的线程被移到Entry List, EntryList与ContentionList逻辑上同属等待队列，ContentionList会被线程并发访问，为了降低对ContentionList队尾的争用，而建立EntryList。Owner线程在unlock时会从ContentionList中迁移线程到EntryList，并会指定EntryList中的某个线程（一般为Head）为Ready（OnDeck）线程。Owner线程并不是把锁传递给OnDeck线程，只是把竞争锁的权利交给OnDeck，OnDeck线程需要重新竞争锁。这样做虽然牺牲了一定的公平性，但极大的提高了整体吞吐量，在Hotspot中把OnDeck的选择行为称之为“竞争切换”。
-* Wait Set：那些调用wait方法被阻塞的线程被放置到Wait Set
-* OnDeck：任何时刻最多只能有一个线程正在竞争锁，该线程称为OnDeck
-* Owner：获得锁的线程称为Owner
-* !Owner：释放锁的线程
+* Entry List：
+>> Contention List中那些有资格成为候选人的线程被移到Entry List, EntryList与ContentionList逻辑上同属等待队列，ContentionList会被线程并发访问，为了降低对ContentionList队尾的争用，而建立EntryList。Owner线程在unlock时会从ContentionList中迁移线程到EntryList，并会指定EntryList中的某个线程（一般为Head）为Ready（OnDeck）线程。Owner线程并不是把锁传递给OnDeck线程，只是把竞争锁的权利交给OnDeck，OnDeck线程需要重新竞争锁。这样做虽然牺牲了一定的公平性，但极大的提高了整体吞吐量，在Hotspot中把OnDeck的选择行为称之为“竞争切换”。
+* Wait Set：
+>> 那些调用wait方法被阻塞的线程被放置到Wait Set
+* OnDeck：
+>> 任何时刻最多只能有一个线程正在竞争锁，该线程称为OnDeck
+* Owner：
+>> 获得锁的线程称为Owner
+* !Owner：
+>> 释放锁的线程
 
 ##### 自旋锁
 问题：
@@ -108,17 +116,18 @@ b. Synchronized总共有三种用法：
 那synchronized实现何时使用了自旋锁？
 > 答案是在线程进入ContentionList时，也即第一步操作前。线程在进入等待队列时首先进行自旋尝试获得锁，如果不成功再进入等待队列。这对那些已经在等待队列中的线程来说，稍微显得不公平。还有一个不公平的地方是自旋线程可能会抢占了Ready线程的锁。自旋锁由每个监视对象维护，每个监视对象一个。
 
-缺点： 自旋占用cpu
-
 
 --------
 
-  HotspotJVM中，锁的状态总共有四种：无锁状态、偏向锁、轻量级锁和重量级锁。随着锁的竞争，锁可以从偏向锁升级到轻量级锁，再升级的重量级锁（但是锁的升级是单向的，也就是说只能从低到高升级，不会出现锁的降级）。JDK 1.6中默认是开启偏向锁和轻量级锁的，我们也可以通过-XX:-UseBiasedLocking来禁用偏向锁。锁的状态保存在对象的头文件中。参考[reference_1](http://www.infoq.com/cn/articles/java-se-16-synchronized),[reference_2](http://www.tuicool.com/articles/2aeAZn),[reference_3](http://www.cnblogs.com/paddix/p/5405678.html)
+  HotspotJVM中，锁的状态总共有四种：无锁状态、偏向锁、轻量级锁和重量级锁。随着锁的竞争，锁可以从偏向锁升级到轻量级锁，再升级的重量级锁（但是锁的升级是单向的，也就是说只能从低到高升级，不会出现锁的降级）。JDK 1.6中默认是开启偏向锁和轻量级锁的，我们也可以通过-XX:-UseBiasedLocking来禁用偏向锁。锁的状态保存在对象的头文件中。
+
+ 参考[reference_1](http://www.infoq.com/cn/articles/java-se-16-synchronized),[reference_2](http://www.tuicool.com/articles/2aeAZn),[reference_3](http://www.cnblogs.com/paddix/p/5405678.html)
 
 > 如果对象是数组类型，则虚拟机用3个Word（字宽）存储对象头，如果对象是非数组类型，则用2字宽存储对象头。在32位虚拟机中，一字宽等于四字节，即32bit。
 
+
   |长度|内容|说明|
-  |---|----|----|
+  |-----|-----|-----|
   |32/64bit|Mark Word|存储对象的hashCode或锁信息等。|
   |32/64bit|Class Metadata Address|存储到对象类型数据的指针|
   |32/64bit|Array length|数组的长度（如果当前对象是数组）|
