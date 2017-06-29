@@ -23,6 +23,10 @@ b. Synchronized总共有三种用法：
 
 ---
 
+Synchronized是通过对象内部的一个叫做监视器锁（monitor）来实现的。但是监视器锁本质又是依赖于底层的操作系统的Mutex Lock来实现的。而操作系统实现线程之间的切换这就需要从用户态转换到核心态，这个成本非常高，状态之间的转换需要相对比较长的时间，这就是为什么Synchronized效率低的原因。因此，这种依赖于操作系统Mutex Lock所实现的锁我们称之为“重量级锁”。JDK中对Synchronized做的种种优化，其核心都是为了减少这种重量级锁的使用。JDK1.6以后，为了减少获得锁和释放锁所带来的性能消耗，提高性能，引入了“轻量级锁”和“偏向锁”。
+
+我们先来看一段代码，同步块到底是怎么做的？
+
 ```java
     public class SynchronizedDemo {
       public void method() {
@@ -68,33 +72,52 @@ b. Synchronized总共有三种用法：
 	}
 ```
 
+注意上面反编译后的代码，我们可以看到synchronized产出了`monitorenter`,`monitorexit`这两个指令，JVM规范给出了这两个指令的解释：
+
 1. `monitorenter`
-> 每个对象有一个监视器锁（monitor）。当monitor被占用时就会处于锁定状态，线程执行`monitorenter`指令时尝试获取monitor的所有权，过程如下：
->>  a. 如果monitor的进入数为0，则该线程进入monitor，然后将进入数设置为1，该线程即为monitor的所有者。
->
->>  b. 如果线程已经占有该monitor，只是重新进入，则进入monitor的进入数加1。
->
->>  c. 如果其他线程已经占用了monitor，则该线程进入阻塞状态，直到monitor的进入数为0，再重新尝试获取monitor的所有权。
+> Each object is associated with a monitor.
+> A monitor is locked if and only if it has an owner. The thread that executes monitorenter attempts to gain ownership of the monitor associated with objectref, as follows:
+
+ > • If the entry count of the monitor associated with objectref is zero, the thread enters the monitor and sets its entry count to one. The thread is then the owner of the monitor.
+
+ > • If the thread already owns the monitor associated with objectref, it reenters the monitor, incrementing its entry count.
+
+ > • If another thread already owns the monitor associated with objectref, the thread blocks until the monitor's entry count is zero, then tries again to gain ownership.
 
 2. `monitorexit`
-> 执行monitorexit的线程必须是objectref所对应的monitor的所有者。
-指令执行时，monitor的进入数减1，如果减1后进入数为0，那线程退出monitor，不再是这个monitor的所有者。其他被这个monitor阻塞的线程可以尝试去获取这个 monitor 的所有权。
+> The thread that executes monitorexit must be the owner of the monitor associated with the instance referenced by objectref.
 
->> wait/notify等方法也依赖于monitor对象，这就是为什么只有在同步的块或者方法中才能调用wait/notify等方法，否则会抛出java.lang.IllegalMonitorStateException的异常的原因。
+ > The thread decrements the entry count of the monitor associated with objectref. If as a result the value of the entry count is zero, the thread exits the monitor and is no longer its owner. Other threads that are blocking to enter the monitor are allowed to attempt to do so.
 
+```comment
+   注意：
+   wait/notify等方法也依赖于monitor对象，这就是为什么只有在同步的块或者方法中才能调用wait/notify
+   等方法，否则会抛出java.lang.IllegalMonitorStateException异常的原因。
+```
 
-对同步方法进行反编译，方法的同步并没有通过指令`monitorenter`和`monitorexit`来完成（理论上其实也可以通过这两条指令来实现），不过相对于普通方法，其常量池中多了ACC_SYNCHRONIZED标示符。JVM就是根据该标示符来实现方法的同步的：当方法调用时，调用指令将会检查方法的 ACC_SYNCHRONIZED 访问标志是否被设置，如果设置了，执行线程将先获取monitor，获取成功之后才能执行方法体，方法执行完后再释放monitor。在方法执行期间，其他任何线程都无法再获得同一个monitor对象。 其实本质上没有区别，只是方法的同步是一种隐式的方式来实现，无需通过字节码来完成。
+##### synchronized同步块对比synchronized同步方法
 
+当我们对同步方法进行反编译，方法的同步并没有通过指令`monitorenter`和`monitorexit`来完成（理论上其实也可以通过这两条指令来实现），不过相对于普通方法，其常量池中多了ACC_SYNCHRONIZED标示符。
 
-> Synchronized是通过对象内部的一个叫做监视器锁（monitor）来实现的。但是监视器锁本质又是依赖于底层的操作系统的Mutex Lock来实现的。而操作系统实现线程之间的切换这就需要从用户态转换到核心态，这个成本非常高，状态之间的转换需要相对比较长的时间，这就是为什么Synchronized效率低的原因。因此，这种依赖于操作系统Mutex Lock所实现的锁我们称之为“重量级锁”。JDK中对Synchronized做的种种优化，其核心都是为了减少这种重量级锁的使用。JDK1.6以后，为了减少获得锁和释放锁所带来的性能消耗，提高性能，引入了“轻量级锁”和“偏向锁”。
+JVM就是根据该标示符来实现方法的同步的：当方法调用时，调用指令将会检查方法的 ACC_SYNCHRONIZED 访问标志是否被设置，如果设置了，执行线程将先获取monitor，获取成功之后才能执行方法体，方法执行完后再释放monitor。
+
+在方法执行期间，其他任何线程都无法再获得同一个monitor对象。 其实本质上没有区别，只是方法的同步是一种隐式的方式来实现，无需通过字节码来完成。
+
 
 -----
 
-#### 线程状态及状态转换
+在介绍偏向锁和轻量级锁之前，我们先来看一下JVM(HotSpot虚拟机)中线程之间状态转换是怎么做的
+
+#### monitor如何管理线程状态及状态转换
+
+线程在抢占共享资源时，会争抢被锁住对象的监视器，监视器内部通过几个虚拟数据结构来管理这些线程，如下图：
+
+![](http://7u2nrz.com1.z0.glb.clouddn.com/monitor_inner.gif)
+
 > 当多个线程同时请求某个对象监视器时，对象监视器会设置几种状态用来区分请求的线程：
 * Contention List：
 >> 所有请求锁的线程将被首先放置到该竞争队列, ContentionList并不是一个真正的Queue，而只是一个虚拟队列，原因在于ContentionList是由Node及其next指针逻辑构成，并不存在一个Queue的数据结构。ContentionList是一个后进先出（LIFO）的队列，每次新加入Node时都会在队头进行，通过CAS改变第一个节点的的指针为新增节点，同时设置新增节点的next指向后续节点，而取得操作则发生在队尾。显然，该结构其实是个Lock-Free的队列。
-因为只有Owner线程才能从队尾取元素，也即线程出列操作无争用，当然也就避免了CAS的ABA问题。
+因为只有Owner线程才能从队尾取元素，也即线程出列操作无争用，当然也就避免了CAS的[ABA问题](https://en.wikipedia.org/wiki/ABA_problem)。
 * Entry List：
 >> Contention List中那些有资格成为候选人的线程被移到Entry List, EntryList与ContentionList逻辑上同属等待队列，ContentionList会被线程并发访问，为了降低对ContentionList队尾的争用，而建立EntryList。Owner线程在unlock时会从ContentionList中迁移线程到EntryList，并会指定EntryList中的某个线程（一般为Head）为Ready（OnDeck）线程。Owner线程并不是把锁传递给OnDeck线程，只是把竞争锁的权利交给OnDeck，OnDeck线程需要重新竞争锁。这样做虽然牺牲了一定的公平性，但极大的提高了整体吞吐量，在Hotspot中把OnDeck的选择行为称之为“竞争切换”。
 * Wait Set：
@@ -122,6 +145,8 @@ b. Synchronized总共有三种用法：
   HotspotJVM中，锁的状态总共有四种：无锁状态、偏向锁、轻量级锁和重量级锁。随着锁的竞争，锁可以从偏向锁升级到轻量级锁，再升级的重量级锁（但是锁的升级是单向的，也就是说只能从低到高升级，不会出现锁的降级）。JDK 1.6中默认是开启偏向锁和轻量级锁的，我们也可以通过-XX:-UseBiasedLocking来禁用偏向锁。锁的状态保存在对象的头文件中。
 
  参考[reference_1](http://www.infoq.com/cn/articles/java-se-16-synchronized),[reference_2](http://www.tuicool.com/articles/2aeAZn),[reference_3](http://www.cnblogs.com/paddix/p/5405678.html)
+
+下面我们来看一下对象头部信息的内容:
 
 > 如果对象是数组类型，则虚拟机用3个Word（字宽）存储对象头，如果对象是非数组类型，则用2字宽存储对象头。在32位虚拟机中，一字宽等于四字节，即32bit。
 
@@ -181,14 +206,19 @@ b. Synchronized总共有三种用法：
   </tbody>
   </table>
 
-####  轻量级锁的加锁过程 (参考：http://www.infoq.com/cn/articles/java-se-16-synchronized)
-![](http://7u2nrz.com1.z0.glb.clouddn.com/light-weight-lock-acquire.png)
+##### 偏向锁 (https://blogs.oracle.com/dave/biased-locking-in-hotspot)
+
 ####  偏向锁的枷锁过程
+在JVM1.6中引入了偏向锁，偏向锁主要解决**无竞争**下的锁性能问题，首先我们看下无竞争下锁存在什么问题：
+现在几乎所有的锁都是可重入的，也即已经获得锁的线程可以多次锁住/解锁监视对象，按照之前的HotSpot设计，每次加锁/解锁都会涉及到一些CAS操作（比如对等待队列的CAS操作），CAS操作会延迟本地调用，因此偏向锁的想法是一旦线程第一次获得了监视对象，之后让监视对象“偏向”这个线程，之后的多次调用则可以避免CAS操作，说白了就是置个变量，如果发现为true则无需再走各种加锁/解锁流程。
+
 ![](http://7u2nrz.com1.z0.glb.clouddn.com/biase-lock-acquire.png)
 
-##### 偏向锁 (https://blogs.oracle.com/dave/biased-locking-in-hotspot)
-在JVM1.6中引入了偏向锁，偏向锁主要解决无竞争下的锁性能问题，首先我们看下无竞争下锁存在什么问题：
-现在几乎所有的锁都是可重入的，也即已经获得锁的线程可以多次锁住/解锁监视对象，按照之前的HotSpot设计，每次加锁/解锁都会涉及到一些CAS操作（比如对等待队列的CAS操作），CAS操作会延迟本地调用，因此偏向锁的想法是一旦线程第一次获得了监视对象，之后让监视对象“偏向”这个线程，之后的多次调用则可以避免CAS操作，说白了就是置个变量，如果发现为true则无需再走各种加锁/解锁流程。
+
+####  轻量级锁的加锁过程 (参考：http://www.infoq.com/cn/articles/java-se-16-synchronized)
+![](http://7u2nrz.com1.z0.glb.clouddn.com/light-weight-lock-acquire.png)
+
+
 
 > CAS为什么会引入本地延迟？这要从SMP（对称多处理器）架构说起，下图大概表明了SMP的结构：
 * CAS及SMP架构
