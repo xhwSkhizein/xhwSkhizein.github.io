@@ -1,0 +1,55 @@
+---
+title: 安装grpc编译工具
+layout: post
+guid: urn:uuid:c7373f1e-b6f9-4960-bbf9-01fe0246c059
+tags:
+  - 
+---
+
+
+> 参考 [官方文档1](https://github.com/grpc/grpc-java/blob/master/COMPILING.md)
+
+> 参考 [官方文档2](https://github.com/grpc/grpc-java/tree/master/compiler)
+
+
+#### 1. 构建编译工具前要先安装protobuf3.x
+
+[Protobuf3.x Source code 下载](https://github.com/google/protobuf/releases)
+
+a. OSX 可能需要 [automake](http://ftp.gnu.org/gnu/automake/), 编译安装
+, automake需要[autoconf](http://ftp.gnu.org/gnu/autoconf/)
+> 这里我直接 `brew install automake`
+
+b. `./autogen.sh` 需要[libtool](http://www.gnu.org/software/libtool/), 用完记得删掉(make uninstall)，避免其它build冲突
+> configure.ac:30: error: possibly undefined macro: AC_PROG_LIBTOOL
+ 
+c. 编译安装
+ ```
+  ./autogen.sh
+  ./configure
+  make
+  sudo make install
+```
+
+`$ protoc --version`
+> `libprotoc 3.2.0`
+
+
+#### 2. 编译grpc编译工具
+
+依次执行
+
+ `$ git clone https://github.com/grpc/grpc-java.git`
+
+ `$ cd grpc-java`
+
+ `$ git checkout 你需要的版本`
+
+ `$ ./gradlew clean`
+
+ 如果出错了, 尝试这个
+> ./gradlew clean && export CXXFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib" && ./gradlew java_pluginExecutable
+
+ `$ ./gradlew java_pluginExecutable`
+
+ 编译成功，就可以使用`你的路径/grpc-java/compiler/build/exe/java_plugin/protoc-gen-grpc-java`，进行编译grpc的protoc文件了
