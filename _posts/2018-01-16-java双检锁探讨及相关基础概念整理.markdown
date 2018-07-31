@@ -1,0 +1,13 @@
+---
+title: java双检锁探讨及相关基础概念整理
+layout: post
+guid: urn:uuid:177ea59b-e3f8-4766-b467-05714d93997a
+tags:
+  - 
+---
+
+整理双检锁相关的基础知识
+
+[long类型变量的非原子性](http://blog.csdn.net/maritimesun/article/details/7839010)
+
+[double long value & volatile](http://7u2nrz.com1.z0.glb.clouddn.com/volatile_jvm%E8%A7%84%E8%8C%83.jpg)
