@@ -1,0 +1,11 @@
+---
+title: 分布式系统一致性发展史
+layout: post
+guid: urn:uuid:03487344-46ee-4bb8-9232-a7f18c9ac03b
+tags:
+  - 
+---
+
+
+http://danielw.cn/history-of-distributed-systems-1
+http://danielw.cn/network-failure-models
