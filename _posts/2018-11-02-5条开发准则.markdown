@@ -1,0 +1,36 @@
+---
+title: 5条开发准则
+layout: post
+guid: urn:uuid:f6163da8-51b0-4d32-b031-58ce9a35da46
+tags:
+  - 
+---
+
+
+[5 Laws every developer should know](https://blog.ippon.tech/5-laws-every-developer-should-know/)
+
+### Murphy’s Law
+
+> "If anything can go wrong, it will."
+
+### Knuth’s Law
+
+> “Premature optimization is the root of all evil (or at least most of it) in programming.”
+
+### North’s Law
+
+> “Every decision is a trade off.”
+
+### Conway’s Law
+
+> “Organizations which design systems ... are constrained to produce designs which are copies of the communication structures of these organizations.”
+
+### Law of triviality (Parkinson's law of triviality)
+
+> “Members of an organization give disproportionate weight to trivial issues.”
+
+### Conclusion
+
+These 5 laws are only a few examples of old lessons learned in our industry. There are many more to learn and discover when gaining more experience in the software development trenches.
+
+Even if some of them may be seen as common-sense now, I strongly believe that knowing these principles will help you recognize patterns and react to them.
