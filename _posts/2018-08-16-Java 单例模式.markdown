@@ -1,0 +1,10 @@
+---
+title: Java 单例模式
+layout: post
+guid: urn:uuid:c249a3c3-8762-496c-89c8-52b720c8b98e
+tags:
+  - 
+---
+
+
+[Double checked locking](https://en.wikipedia.org/wiki/Double-checked_locking#Usage_in_Java)

@@ -1,0 +1,9 @@
+---
+title: nginx架构及基础知识
+layout: post
+guid: urn:uuid:7fe777af-d59d-490d-a9c9-4496d18e48d2
+tags:
+  - 
+---
+
+(参考)[http://tengine.taobao.org/book/chapter_02.html]

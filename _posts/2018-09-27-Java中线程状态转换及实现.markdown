@@ -1,0 +1,11 @@
+---
+title: Java中线程状态转换及实现
+layout: post
+guid: urn:uuid:efe6a299-955b-493b-9b26-d0e5f4f7cdc2
+tags:
+  - 
+---
+
+
+www.cnblogs.com/waterystone/p/4920007.html
+
